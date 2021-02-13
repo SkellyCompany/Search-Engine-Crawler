@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\David\\Desktop\\Dev\\School\\DevelopmentOfLargeSystems-Ole\\Search-Engine-Crawler\\SearchEngine\\SearchEngineCrawler\\SearchEngineCrawler.csproj": {}
+    "C:\\Users\\David\\Desktop\\Dev\\School\\DevelopmentOfLargeSystems-Ole\\Search-Engine-Solution\\SearchEngine\\Search-Engine-Crawler\\SearchEngine\\SearchEngine.Crawler\\SearchEngine.Crawler.csproj": {}
   },
   "projects": {
-    "C:\\Users\\David\\Desktop\\Dev\\School\\DevelopmentOfLargeSystems-Ole\\Search-Engine-Crawler\\SearchEngine\\SearchEngineCrawler\\SearchEngineCrawler.csproj": {
+    "C:\\Users\\David\\Desktop\\Dev\\School\\DevelopmentOfLargeSystems-Ole\\Search-Engine-Solution\\SearchEngine\\Search-Engine-Crawler\\SearchEngine\\SearchEngine.Crawler\\SearchEngine.Crawler.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\David\\Desktop\\Dev\\School\\DevelopmentOfLargeSystems-Ole\\Search-Engine-Crawler\\SearchEngine\\SearchEngineCrawler\\SearchEngineCrawler.csproj",
-        "projectName": "SearchEngineCrawler",
-        "projectPath": "C:\\Users\\David\\Desktop\\Dev\\School\\DevelopmentOfLargeSystems-Ole\\Search-Engine-Crawler\\SearchEngine\\SearchEngineCrawler\\SearchEngineCrawler.csproj",
+        "projectUniqueName": "C:\\Users\\David\\Desktop\\Dev\\School\\DevelopmentOfLargeSystems-Ole\\Search-Engine-Solution\\SearchEngine\\Search-Engine-Crawler\\SearchEngine\\SearchEngine.Crawler\\SearchEngine.Crawler.csproj",
+        "projectName": "SearchEngine.Crawler",
+        "projectPath": "C:\\Users\\David\\Desktop\\Dev\\School\\DevelopmentOfLargeSystems-Ole\\Search-Engine-Solution\\SearchEngine\\Search-Engine-Crawler\\SearchEngine\\SearchEngine.Crawler\\SearchEngine.Crawler.csproj",
         "packagesPath": "C:\\Users\\David\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\David\\Desktop\\Dev\\School\\DevelopmentOfLargeSystems-Ole\\Search-Engine-Crawler\\SearchEngine\\SearchEngineCrawler\\obj\\",
+        "outputPath": "C:\\Users\\David\\Desktop\\Dev\\School\\DevelopmentOfLargeSystems-Ole\\Search-Engine-Solution\\SearchEngine\\Search-Engine-Crawler\\SearchEngine\\SearchEngine.Crawler\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\David\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -39,6 +39,12 @@
       "frameworks": {
         "netcoreapp3.1": {
           "targetAlias": "netcoreapp3.1",
+          "dependencies": {
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[2.11.6, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
