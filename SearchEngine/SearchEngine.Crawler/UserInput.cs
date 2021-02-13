@@ -5,27 +5,43 @@ namespace SearchEngine.Crawler
 {
 	class UserInput
 	{
-
 		public void Initialize()
 		{
-			Console.WriteLine("--------------------------------");
-			Console.WriteLine("Press any key to start fetching terms");
+			Console.WriteLine("Press enter to start fetching terms from all documents");
 			Console.WriteLine("--------------------------------");
 			Console.ReadLine();
-
-			Console.WriteLine();
-			Console.WriteLine("Searching for terms . . .");
+			Console.WriteLine("Searching for all unique terms in documents . . .");
 			Console.WriteLine();
 
 			CrawlerManager crawlerManager = new CrawlerManager();
 			List<Crawler> crawlers = crawlerManager.CreateCrawlers(1);
 			crawlerManager.StartCrawlers();
-
-			List<string> uniqueTerms = crawlers[0].Terms;
-			for (int i = 0; i < uniqueTerms.Count; i++)
+			List<DocumentFile> documentFiles = crawlers[0].DocumentFiles;
+			int totalUniqueTermsFound = 0;
+			for (int i = 0; i < documentFiles.Count; i++)
 			{
-				Console.WriteLine($"{i}: {uniqueTerms[i]}");
+				totalUniqueTermsFound += documentFiles[i].Terms.Count;
+				Console.ForegroundColor = ConsoleColor.Cyan;
+				Console.WriteLine($"Document_{i}: {documentFiles[i].FileName}");
+				Console.ForegroundColor = ConsoleColor.Yellow;
+				for (int j = 0; j < documentFiles[i].Terms.Count; j++)
+				{
+					Console.WriteLine($"Term_{j}: {documentFiles[i].Terms[j]}");
+				}
+				Console.WriteLine();
 			}
+
+			Console.ForegroundColor = ConsoleColor.White;
+			Console.WriteLine("--------------------------------");
+			Console.WriteLine("Finished searching");
+			Console.Write("Total unique terms found: ");
+			Console.ForegroundColor = ConsoleColor.Yellow;
+			Console.WriteLine(totalUniqueTermsFound);
+			Console.ForegroundColor = ConsoleColor.White;
+
+			Console.WriteLine();
+			Console.WriteLine("Press enter to exit");
+			Console.ReadLine();
 		}
 	}
 }

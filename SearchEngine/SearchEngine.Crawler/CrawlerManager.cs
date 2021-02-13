@@ -11,10 +11,14 @@ namespace SearchEngine.Crawler
 		public void StartCrawlers()
 		{
 			string mainPath = Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
-			string path = Path.GetFullPath(Path.Combine(mainPath, @"..\..\..\..\..\..\..\files\TestDocument.txt"));
+			string documentsPath = Path.GetFullPath(Path.Combine(mainPath, @"..\..\..\..\..\..\..\files\"));
+			string[] documentFiles = Directory.GetFiles(documentsPath);
 			for (int i = 0; i < _crawlers.Count; i++)
 			{
-				_crawlers[i].Crawl(path);
+				for (int j = 0; j < documentFiles.Length; j++)
+				{
+					_crawlers[i].Crawl(documentFiles[j], Path.GetFileName(documentFiles[j]));
+				}
 			}
 		}
 
