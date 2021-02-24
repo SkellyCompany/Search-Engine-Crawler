@@ -34,13 +34,46 @@ namespace SearchEngine.Crawler
 			Console.ForegroundColor = ConsoleColor.White;
 			Console.WriteLine("--------------------------------");
 			Console.WriteLine("Finished searching");
+			Console.Write("Total document files found: ");
+			Console.ForegroundColor = ConsoleColor.Cyan;
+			Console.WriteLine(documentFiles.Count);
+			Console.ForegroundColor = ConsoleColor.White;
 			Console.Write("Total unique terms found: ");
 			Console.ForegroundColor = ConsoleColor.Yellow;
 			Console.WriteLine(totalUniqueTermsFound);
 			Console.ForegroundColor = ConsoleColor.White;
+			Console.WriteLine();
 
+			Client client = new Client();
+			while (!client.IsConnected)
+			{
+				Console.WriteLine("Press enter to connect to the database");
+				Console.WriteLine("--------------------------------");
+				Console.ReadLine();
+				Console.WriteLine("Connecting to the database . . .");
+				try
+				{
+					client.Connect();
+				}
+				catch (Exception)
+				{
+					Console.ForegroundColor = ConsoleColor.Red;
+					Console.WriteLine("Failed to connect to the database");
+					Console.ForegroundColor = ConsoleColor.White;
+					Console.WriteLine();
+				}
+			}
+
+			client.IndexDocuments(documentFiles);
+			Console.ForegroundColor = ConsoleColor.Green;
+			Console.WriteLine("Successfully connected to the database");
+			Console.ForegroundColor = ConsoleColor.White;
+			Console.WriteLine();
+			Console.WriteLine("Indexing terms to the dababase . . .");
+			Console.WriteLine("Finished indexing");
 			Console.WriteLine();
 			Console.WriteLine("Press enter to exit");
+			Console.WriteLine("--------------------------------");
 			Console.ReadLine();
 		}
 	}
