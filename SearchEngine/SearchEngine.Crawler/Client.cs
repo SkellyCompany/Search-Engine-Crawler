@@ -29,15 +29,15 @@ namespace SearchEngine.Crawler
 			}
 		}
 
-		public int IndexDocuments(List<DocumentFile> documentFiles)
+		public int IndexDocuments(List<Document> documentFiles)
 		{
 			List<BsonDocument> bsonDocuments = new List<BsonDocument>();
 			for (int i = 0; i < documentFiles.Count; i++)
 			{
 				BsonDocument bsonDocument = new BsonDocument
 				{
-					{ "url",  $"https://{ documentFiles[i].FileName }.com"  },
-					{ "name", documentFiles[i].FileName },
+					{ "url",  $"https://{ documentFiles[i].Name }.com"  },
+					{ "name", documentFiles[i].Name },
 				};
 				BsonDocument foundbsonDocument = _documentCollection.Find(bsonDocument).FirstOrDefault();
 				if (foundbsonDocument == null)
@@ -53,34 +53,58 @@ namespace SearchEngine.Crawler
 			return bsonDocuments.Count;
 		}
 
-		public int IndexTerms(List<DocumentFile> documentFiles)
+		public int IndexTerms(List<Document> documents)
 		{
 			List<BsonDocument> insertBsonDocuments = new List<BsonDocument>();
 			List<BsonDocument> updateBsonDocuments = new List<BsonDocument>();
-			for (int i = 0; i < documentFiles.Count; i++)
+			List<BsonDocument> incrementBsonDocuments = new List<BsonDocument>();
+			for (int i = 0; i < documents.Count; i++)
 			{
-				for (int j = 0; j < documentFiles[i].Terms.Count; j++)
+				for (int j = 0; j < documents[i].Terms.Count; j++)
 				{
+					BsonDocument arrayBsonDocument = new BsonDocument { { "url", $"https://{ documents[i].Name }.com" }, { "occurence", documents[i].Terms[j].Occurence }, { "docId", "" } };
 					BsonArray bsonArray = new BsonArray
 					{
-						new BsonDocument { { "url", $"https://{ documentFiles[i].FileName }.com" }, { "occurence", 1 }, { "docId", "" } },
+						arrayBsonDocument
 					};
 					BsonDocument bsonDocument = new BsonDocument
 					{
-						{ "value", documentFiles[i].Terms[j] },
+						{ "name", documents[i].Terms[j].Name },
 						{ "documents", bsonArray }
 					};
-					BsonDocument foundbsonDocument = _termCollection.Find(bsonDocument).FirstOrDefault();
+					FilterDefinition<BsonDocument> termNameFilter = Builders<BsonDocument>.Filter.Eq("name", documents[i].Terms[j].Name);
+					BsonDocument foundbsonDocument = _termCollection.Find(termNameFilter).FirstOrDefault();
 					if (foundbsonDocument == null)
 					{
+						Console.WriteLine("a");
 						insertBsonDocuments.Add(bsonDocument);
 					}
 					else
 					{
-						//var filter = new BsonDocument();
-						//var update = new BsonDocument("$set", new BsonDocument("documents", bsonArray));
-						//_termCollection.UpdateMany(filter, update);
-						//updateBsonDocuments.Add(bsonDocument);
+						//var filter = Builders<BsonDocument>.Filter.Eq("name", documents[i].Terms[j].Name);
+						//var update = Builders<BsonDocument>.Update.Set("documents.0.occurence", documents[i].Terms[j].Occurence);
+						//_termCollection.UpdateOne(filter, update);
+
+						var filter = Builders<BsonDocument>.Filter.Eq("name", documents[i].Terms[j].Name);
+
+						//_termCollection.Update(qu
+						//_termCollection.UpdateOne(filter, update); bool doesContainArrayElement = foundbsonDocument.GetElement(2).Value.AsBsonArray.Contains(arrayBsonDocument);
+						//if (!doesContainArrayElement)
+						//{
+						//	Console.WriteLine("b");
+						//	updateBsonDocuments.Add(bsonDocument);
+						//	//var filter = new BsonDocument();
+						//	//var update = new BsonDocument("$set", new BsonDocument("documents", bsonArray));
+						//	//_termCollection.UpdateMany(filter, update);
+						//	//updateBsonDocuments.Add(bsonDocument);
+						//}
+						//else
+						//{
+						//	Console.WriteLine(documents[i].Terms[j].Name + "|" + documents[i].Terms[j].Occurence);
+						//	var filter = Builders<BsonDocument>.Filter.Eq("name", documents[i].Terms[j].Name);
+						//	var update = Builders<BsonDocument>.Update.Set("documents.0.occurence", documents[i].Terms[j].Occurence);
+						//	_termCollection.UpdateOne(filter, update);
+						//}
 					}
 				}
 			}
@@ -91,9 +115,11 @@ namespace SearchEngine.Crawler
 			}
 			if (updateBsonDocuments.Count > 0)
 			{
-				//var filter = new BsonDocument();
-				//var update = new BsonDocument("$set", new BsonDocument("documents", t));
-				//_termCollection.UpdateMany(filter, update);
+
+			}
+			if (incrementBsonDocuments.Count > 0)
+			{
+
 			}
 			return insertBsonDocuments.Count;
 		}

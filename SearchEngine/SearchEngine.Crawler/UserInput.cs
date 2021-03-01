@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace SearchEngine.Crawler
 {
@@ -19,17 +20,17 @@ namespace SearchEngine.Crawler
 			CrawlerManager crawlerManager = new CrawlerManager();
 			List<Crawler> crawlers = crawlerManager.CreateCrawlers(1);
 			crawlerManager.StartCrawlers();
-			List<DocumentFile> documentFiles = crawlers[0].DocumentFiles;
+			List<Document> documentFiles = crawlers[0].DocumentFiles;
 			int totalUniqueTermsFound = 0;
 			for (int i = 0; i < documentFiles.Count; i++)
 			{
 				totalUniqueTermsFound += documentFiles[i].Terms.Count;
 				Console.ForegroundColor = ConsoleColor.Cyan;
-				Console.WriteLine($"Document_{i}: {documentFiles[i].FileName}");
+				Console.WriteLine($"Document_{i}: {documentFiles[i].Name}");
 				Console.ForegroundColor = ConsoleColor.Yellow;
 				for (int j = 0; j < documentFiles[i].Terms.Count; j++)
 				{
-					Console.WriteLine($"Term_{j}: {documentFiles[i].Terms[j]}");
+					Console.WriteLine($"Term_{j}: {documentFiles[i].Terms[j].Name} | Occurence: {documentFiles[i].Terms[j].Occurence}");
 				}
 				Console.WriteLine();
 			}
@@ -51,6 +52,7 @@ namespace SearchEngine.Crawler
 			Console.WriteLine("--------------------------------");
 			Console.WriteLine();
 
+			Console.ReadLine();
 			Client client = new Client();
 			while (!client.IsConnected)
 			{
