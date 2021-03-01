@@ -7,6 +7,7 @@ namespace SearchEngine.Crawler
 {
 	class Client
 	{
+		private IMongoDatabase _database;
 		private IMongoCollection<BsonDocument> _termCollection;
 		private IMongoCollection<BsonDocument> _documentCollection;
 
@@ -18,9 +19,9 @@ namespace SearchEngine.Crawler
 			try
 			{
 				MongoClient client = new MongoClient("mongodb+srv://admin:skelly@cluster0.7ncjo.mongodb.net/SearchEngine?retryWrites=true&w=majority");
-				IMongoDatabase database = client.GetDatabase("SearchEngine");
-				_termCollection = database.GetCollection<BsonDocument>("Term");
-				_documentCollection = database.GetCollection<BsonDocument>("Document");
+				_database = client.GetDatabase("SearchEngine");
+				_termCollection = _database.GetCollection<BsonDocument>("Term");
+				_documentCollection = _database.GetCollection<BsonDocument>("Document");
 				IsConnected = true;
 			}
 			catch (ArgumentOutOfRangeException e)
@@ -53,73 +54,36 @@ namespace SearchEngine.Crawler
 			return bsonDocuments.Count;
 		}
 
-		public int IndexTerms(List<Document> documents)
+		public int IndexTerms(List<Term> terms)
 		{
+			ProgressBar.Initialize(0, terms.Count);
+			_database.DropCollection("Term");
 			List<BsonDocument> insertBsonDocuments = new List<BsonDocument>();
-			List<BsonDocument> updateBsonDocuments = new List<BsonDocument>();
-			List<BsonDocument> incrementBsonDocuments = new List<BsonDocument>();
-			for (int i = 0; i < documents.Count; i++)
+			for (int i = 0; i < terms.Count; i++)
 			{
-				for (int j = 0; j < documents[i].Terms.Count; j++)
+				FilterDefinition<BsonDocument> termNameFilter = Builders<BsonDocument>.Filter.Eq("name", terms[i].Name);
+				BsonDocument foundbsonDocument = _termCollection.Find(termNameFilter).FirstOrDefault();
+				if (foundbsonDocument == null)
 				{
-					BsonDocument arrayBsonDocument = new BsonDocument { { "url", $"https://{ documents[i].Name }.com" }, { "occurence", documents[i].Terms[j].Occurence }, { "docId", "" } };
-					BsonArray bsonArray = new BsonArray
+					BsonArray bsonArray = new BsonArray();
+					for (int j = 0; j < terms[i].Documents.Count; j++)
 					{
-						arrayBsonDocument
-					};
+						bsonArray.Add(new BsonDocument { { "url", $"https://{ terms[i].Documents[j].Name }.com" }, { "occurence", terms[i].Documents[j].Occurence }, { "docId", "" } });
+					}
+
 					BsonDocument bsonDocument = new BsonDocument
 					{
-						{ "name", documents[i].Terms[j].Name },
-						{ "documents", bsonArray }
+						{ "name", terms[i].Name},
+						{ "documents", bsonArray}
 					};
-					FilterDefinition<BsonDocument> termNameFilter = Builders<BsonDocument>.Filter.Eq("name", documents[i].Terms[j].Name);
-					BsonDocument foundbsonDocument = _termCollection.Find(termNameFilter).FirstOrDefault();
-					if (foundbsonDocument == null)
-					{
-						Console.WriteLine("a");
-						insertBsonDocuments.Add(bsonDocument);
-					}
-					else
-					{
-						//var filter = Builders<BsonDocument>.Filter.Eq("name", documents[i].Terms[j].Name);
-						//var update = Builders<BsonDocument>.Update.Set("documents.0.occurence", documents[i].Terms[j].Occurence);
-						//_termCollection.UpdateOne(filter, update);
-
-						var filter = Builders<BsonDocument>.Filter.Eq("name", documents[i].Terms[j].Name);
-
-						//_termCollection.Update(qu
-						//_termCollection.UpdateOne(filter, update); bool doesContainArrayElement = foundbsonDocument.GetElement(2).Value.AsBsonArray.Contains(arrayBsonDocument);
-						//if (!doesContainArrayElement)
-						//{
-						//	Console.WriteLine("b");
-						//	updateBsonDocuments.Add(bsonDocument);
-						//	//var filter = new BsonDocument();
-						//	//var update = new BsonDocument("$set", new BsonDocument("documents", bsonArray));
-						//	//_termCollection.UpdateMany(filter, update);
-						//	//updateBsonDocuments.Add(bsonDocument);
-						//}
-						//else
-						//{
-						//	Console.WriteLine(documents[i].Terms[j].Name + "|" + documents[i].Terms[j].Occurence);
-						//	var filter = Builders<BsonDocument>.Filter.Eq("name", documents[i].Terms[j].Name);
-						//	var update = Builders<BsonDocument>.Update.Set("documents.0.occurence", documents[i].Terms[j].Occurence);
-						//	_termCollection.UpdateOne(filter, update);
-						//}
-					}
+					insertBsonDocuments.Add(bsonDocument);
 				}
+				ProgressBar.Progress();
 			}
 
 			if (insertBsonDocuments.Count > 0)
 			{
 				_termCollection.InsertMany(insertBsonDocuments);
-			}
-			if (updateBsonDocuments.Count > 0)
-			{
-
-			}
-			if (incrementBsonDocuments.Count > 0)
-			{
-
 			}
 			return insertBsonDocuments.Count;
 		}

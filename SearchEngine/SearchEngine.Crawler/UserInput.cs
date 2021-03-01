@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace SearchEngine.Crawler
 {
@@ -10,29 +9,32 @@ namespace SearchEngine.Crawler
 		public void Initialize()
 		{
 			Console.WriteLine("Press enter to start the indexing process");
+			Console.WriteLine("(Press R to include results)");
 			Console.WriteLine("--------------------------------");
-			Console.ReadLine();
+			string input = Console.ReadLine();
 			Console.WriteLine("Searching for all unique terms in documents . . .");
 			Console.WriteLine();
 
 			Stopwatch stopwatch = new Stopwatch();
 			stopwatch.Start();
 			CrawlerManager crawlerManager = new CrawlerManager();
-			List<Crawler> crawlers = crawlerManager.CreateCrawlers(1);
+			crawlerManager.CreateCrawlers(1);
 			crawlerManager.StartCrawlers();
-			List<Document> documentFiles = crawlers[0].DocumentFiles;
-			int totalUniqueTermsFound = 0;
-			for (int i = 0; i < documentFiles.Count; i++)
+			List<Term> documentFilesTerms = crawlerManager.CrawlersResult();
+
+			if (input.ToUpper().Equals("R"))
 			{
-				totalUniqueTermsFound += documentFiles[i].Terms.Count;
-				Console.ForegroundColor = ConsoleColor.Cyan;
-				Console.WriteLine($"Document_{i}: {documentFiles[i].Name}");
-				Console.ForegroundColor = ConsoleColor.Yellow;
-				for (int j = 0; j < documentFiles[i].Terms.Count; j++)
+				for (int i = 0; i < documentFilesTerms.Count; i++)
 				{
-					Console.WriteLine($"Term_{j}: {documentFiles[i].Terms[j].Name} | Occurence: {documentFiles[i].Terms[j].Occurence}");
+					Console.ForegroundColor = ConsoleColor.Yellow;
+					Console.WriteLine($"Term_{i}: {documentFilesTerms[i].Name}");
+					for (int j = 0; j < documentFilesTerms[i].Documents.Count; j++)
+					{
+						Console.WriteLine($"	Name: {documentFilesTerms[i].Documents[j].Name},");
+						Console.WriteLine($"	Occurence: {documentFilesTerms[i].Documents[j].Occurence}");
+						Console.WriteLine();
+					}
 				}
-				Console.WriteLine();
 			}
 			stopwatch.Stop();
 
@@ -41,18 +43,17 @@ namespace SearchEngine.Crawler
 			Console.WriteLine("Finished searching");
 			Console.Write("Total document files found: ");
 			Console.ForegroundColor = ConsoleColor.Cyan;
-			Console.WriteLine(documentFiles.Count);
+			Console.WriteLine(documentFilesTerms.Count);
 			Console.ForegroundColor = ConsoleColor.White;
 			Console.Write("Total unique terms found: ");
 			Console.ForegroundColor = ConsoleColor.Yellow;
-			Console.WriteLine(totalUniqueTermsFound);
+			Console.WriteLine(documentFilesTerms.Count);
 			Console.ForegroundColor = ConsoleColor.White;
 			Console.Write("Elapsed time: ");
-			Console.WriteLine(stopwatch.ElapsedMilliseconds);
+			Console.WriteLine(stopwatch.Elapsed.ToString("mm\\:ss\\.ff"));
 			Console.WriteLine("--------------------------------");
 			Console.WriteLine();
 
-			Console.ReadLine();
 			Client client = new Client();
 			while (!client.IsConnected)
 			{
@@ -73,22 +74,14 @@ namespace SearchEngine.Crawler
 			Console.WriteLine();
 
 			Console.WriteLine("Indexing data to the database . . .");
+			Console.WriteLine();
 			stopwatch.Start();
-			int documentsIndexedAmount = client.IndexDocuments(documentFiles);
-			int termsIndexedAmount = client.IndexTerms(documentFiles);
+			client.IndexTerms(documentFilesTerms);
 			stopwatch.Stop();
 			Console.WriteLine("--------------------------------");
 			Console.WriteLine("Finished indexing");
-			Console.Write("Total document files indexed: ");
-			Console.ForegroundColor = ConsoleColor.Cyan;
-			Console.WriteLine($"{documentsIndexedAmount}/{documentFiles.Count}");
-			Console.ForegroundColor = ConsoleColor.White;
-			Console.Write("Total unique terms indexed: ");
-			Console.ForegroundColor = ConsoleColor.Yellow;
-			Console.WriteLine($"{termsIndexedAmount}/{totalUniqueTermsFound}");
-			Console.ForegroundColor = ConsoleColor.White;
 			Console.Write("Elapsed time: ");
-			Console.WriteLine(stopwatch.ElapsedMilliseconds);
+			Console.WriteLine(stopwatch.Elapsed.ToString("mm\\:ss\\.ff"));
 			Console.WriteLine("--------------------------------");
 			Console.WriteLine();
 			Console.WriteLine("Press enter to exit");

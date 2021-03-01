@@ -7,7 +7,7 @@ namespace SearchEngine.Crawler
 {
 	class Crawler
 	{
-		public List<Document> DocumentFiles { get; private set; } = new List<Document>();
+		public List<Term> DocumentFileTerms { get; private set; } = new List<Term>();
 
 
 		public void Crawl(string path, string documentName)
@@ -17,22 +17,29 @@ namespace SearchEngine.Crawler
 			documentFile = regex.Replace(documentFile, " ");
 			List<string> words = documentFile.Split(' ').ToList();
 			List<string> uniqueWords = words.Distinct().ToList();
-			List<Term> terms = new List<Term>();
+
 			for (int i = 0; i < uniqueWords.Count; i++)
 			{
-				int occurence = 0;
+				Document document = new Document() { Url = $"https:{ documentName }.com ", Name = documentName, Occurence = 1 };
+				List<Document> documents = new List<Document>();
+				Term term = new Term() { Name = uniqueWords[i], Documents = documents };
+
 				for (int j = 0; j < words.Count; j++)
 				{
-					if (words[j].Equals(uniqueWords[i]))
+					if (uniqueWords[i].Equals(words[j]))
 					{
-						occurence++;
+						if (term.Documents.Contains(document))
+						{
+							document.Occurence++;
+						}
+						else
+						{
+							term.Documents.Add(document);
+							DocumentFileTerms.Add(term);
+						}
 					}
 				}
-				Term term = new Term() { Name = uniqueWords[i], Occurence = occurence };
-				terms.Add(term);
 			}
-			Document document = new Document() { Name = documentName, Terms = terms };
-			DocumentFiles.Add(document);
 		}
 	}
 }
