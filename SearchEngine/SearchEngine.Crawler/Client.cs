@@ -65,7 +65,7 @@ namespace SearchEngine.Crawler
 				BsonArray bsonArray = new BsonArray();
 				for (int j = 0; j < terms[i].Documents.Count; j++)
 				{
-					bsonArray.Add(new BsonDocument { { "url", $"https://{ terms[i].Documents[j].Name }.com" }, { "occurence", terms[i].Documents[j].Occurence }, { "docId", "" } });
+					bsonArray.Add(new BsonDocument { { "url", $"https://{ terms[i].Documents[j].Name }.com" }, { "occurrences", terms[i].Documents[j].Occurence }, { "docId", "" } });
 				}
 				BsonDocument bsonDocument = new BsonDocument
 				{

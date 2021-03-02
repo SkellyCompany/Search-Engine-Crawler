@@ -19,7 +19,7 @@ namespace SearchEngine.Crawler
 			List<string> words = documentFile.Split(' ').ToList();
 			List<string> uniqueWords = words.Distinct().ToList();
 
-			Parallel.For(0, uniqueWords.Count, i =>
+			for (int i = 0; i < uniqueWords.Count; i++)
 			{
 				Document document = new Document() { Url = $"https:{ documentName }.com ", Name = documentName, Occurence = 1 };
 				List<Document> documents = new List<Document>();
@@ -40,7 +40,7 @@ namespace SearchEngine.Crawler
 						}
 					}
 				}
-			});
+			}
 		}
 	}
 }

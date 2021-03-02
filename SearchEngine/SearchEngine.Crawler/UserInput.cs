@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace SearchEngine.Crawler
@@ -13,6 +15,7 @@ namespace SearchEngine.Crawler
 			Console.WriteLine("(Press R to include results)");
 			Console.WriteLine("--------------------------------");
 			string input = Console.ReadLine();
+
 			Console.WriteLine("Searching for all unique terms in documents . . .");
 			Stopwatch stopwatch = new Stopwatch();
 			stopwatch.Start();
@@ -22,7 +25,6 @@ namespace SearchEngine.Crawler
 			Console.WriteLine();
 			Console.WriteLine("Combining matching documents . . .");
 			List<Term> documentFilesTerms = crawlerManager.CrawlersResult();
-
 			if (input.ToUpper().Equals("R"))
 			{
 				for (int i = 0; i < documentFilesTerms.Count; i++)
