@@ -2,6 +2,7 @@
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SearchEngine.Crawler
 {
@@ -61,23 +62,17 @@ namespace SearchEngine.Crawler
 			List<BsonDocument> insertBsonDocuments = new List<BsonDocument>();
 			for (int i = 0; i < terms.Count; i++)
 			{
-				FilterDefinition<BsonDocument> termNameFilter = Builders<BsonDocument>.Filter.Eq("name", terms[i].Name);
-				BsonDocument foundbsonDocument = _termCollection.Find(termNameFilter).FirstOrDefault();
-				if (foundbsonDocument == null)
+				BsonArray bsonArray = new BsonArray();
+				for (int j = 0; j < terms[i].Documents.Count; j++)
 				{
-					BsonArray bsonArray = new BsonArray();
-					for (int j = 0; j < terms[i].Documents.Count; j++)
-					{
-						bsonArray.Add(new BsonDocument { { "url", $"https://{ terms[i].Documents[j].Name }.com" }, { "occurence", terms[i].Documents[j].Occurence }, { "docId", "" } });
-					}
-
-					BsonDocument bsonDocument = new BsonDocument
-					{
-						{ "name", terms[i].Name},
-						{ "documents", bsonArray}
-					};
-					insertBsonDocuments.Add(bsonDocument);
+					bsonArray.Add(new BsonDocument { { "url", $"https://{ terms[i].Documents[j].Name }.com" }, { "occurence", terms[i].Documents[j].Occurence }, { "docId", "" } });
 				}
+				BsonDocument bsonDocument = new BsonDocument
+				{
+					{ "name", terms[i].Name},
+					{ "documents", bsonArray}
+				};
+				insertBsonDocuments.Add(bsonDocument);
 				ProgressBar.Progress();
 			}
 

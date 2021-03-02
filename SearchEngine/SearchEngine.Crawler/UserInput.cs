@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace SearchEngine.Crawler
 {
@@ -13,13 +14,13 @@ namespace SearchEngine.Crawler
 			Console.WriteLine("--------------------------------");
 			string input = Console.ReadLine();
 			Console.WriteLine("Searching for all unique terms in documents . . .");
-			Console.WriteLine();
-
 			Stopwatch stopwatch = new Stopwatch();
 			stopwatch.Start();
 			CrawlerManager crawlerManager = new CrawlerManager();
 			crawlerManager.CreateCrawlers(1);
-			crawlerManager.StartCrawlers();
+			int totalDocuments = crawlerManager.StartCrawlers();
+			Console.WriteLine();
+			Console.WriteLine("Combining matching documents . . .");
 			List<Term> documentFilesTerms = crawlerManager.CrawlersResult();
 
 			if (input.ToUpper().Equals("R"))
@@ -43,7 +44,7 @@ namespace SearchEngine.Crawler
 			Console.WriteLine("Finished searching");
 			Console.Write("Total document files found: ");
 			Console.ForegroundColor = ConsoleColor.Cyan;
-			Console.WriteLine(documentFilesTerms.Count);
+			Console.WriteLine(totalDocuments);
 			Console.ForegroundColor = ConsoleColor.White;
 			Console.Write("Total unique terms found: ");
 			Console.ForegroundColor = ConsoleColor.Yellow;
@@ -74,7 +75,6 @@ namespace SearchEngine.Crawler
 			Console.WriteLine();
 
 			Console.WriteLine("Indexing data to the database . . .");
-			Console.WriteLine();
 			stopwatch.Start();
 			client.IndexTerms(documentFilesTerms);
 			stopwatch.Stop();

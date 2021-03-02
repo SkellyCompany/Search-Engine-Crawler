@@ -8,15 +8,22 @@ namespace SearchEngine.Crawler
 		private static float _min;
 		private static int _top;
 
-		public static int CurrentValue { get; private set; }
+		public static float CurrentValue { get; private set; }
 		
 		
 		public static void Initialize(float min, float max)
 		{
+			_top = Console.CursorTop;
 			_max = max;
 			_min = min;
-			_top = Console.CursorTop;
-			Console.WriteLine($"{_min}%");
+			CurrentValue = _min;
+			Console.WriteLine($"{CurrentValue}%");
+		}
+
+		public static void Update(float min, float max)
+		{
+			_max = max;
+			_min = min;
 		}
 
 		public static void Progress()

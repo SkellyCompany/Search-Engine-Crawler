@@ -2,12 +2,13 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace SearchEngine.Crawler
 {
 	class Crawler
 	{
-		public List<Term> DocumentFileTerms { get; private set; } = new List<Term>();
+		public List<Term> Terms { get; private set; } = new List<Term>();
 
 
 		public void Crawl(string path, string documentName)
@@ -18,7 +19,7 @@ namespace SearchEngine.Crawler
 			List<string> words = documentFile.Split(' ').ToList();
 			List<string> uniqueWords = words.Distinct().ToList();
 
-			for (int i = 0; i < uniqueWords.Count; i++)
+			Parallel.For(0, uniqueWords.Count, i =>
 			{
 				Document document = new Document() { Url = $"https:{ documentName }.com ", Name = documentName, Occurence = 1 };
 				List<Document> documents = new List<Document>();
@@ -35,11 +36,11 @@ namespace SearchEngine.Crawler
 						else
 						{
 							term.Documents.Add(document);
-							DocumentFileTerms.Add(term);
+							Terms.Add(term);
 						}
 					}
 				}
-			}
+			});
 		}
 	}
 }
