@@ -4801,7 +4801,7 @@
       "outputPath": "/Users/schemabuoi/Developer/Solutions/Search-Engine-Solution/SearchEngine/Crawler/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/schemabuoi/.config/NuGet/NuGet.Config"
+        "/Users/schemabuoi/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp3.1"
