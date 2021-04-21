@@ -4,13 +4,13 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using SearchEngine.Crawler;
+using SearchEngine.Crawler.Domain;
+using SearchEngine.Crawler.Infrastructure;
 
-namespace SearchEngine.Crawler
-{
-	class UserInput
-	{
-		public void Initialize()
-		{
+namespace SearchEngine.UI.Crawler {
+	class UserInput {
+		public void Initialize() {
 			Console.WriteLine("Press enter to start the indexing process");
 			Console.WriteLine("(Press R to include results)");
 			Console.WriteLine("--------------------------------");
@@ -25,14 +25,11 @@ namespace SearchEngine.Crawler
 			Console.WriteLine();
 			Console.WriteLine("Combining matching documents . . .");
 			List<Term> documentFilesTerms = crawlerManager.CrawlersResult();
-			if (input.ToUpper().Equals("R"))
-			{
-				for (int i = 0; i < documentFilesTerms.Count; i++)
-				{
+			if (input.ToUpper().Equals("R")) {
+				for (int i = 0; i < documentFilesTerms.Count; i++) {
 					Console.ForegroundColor = ConsoleColor.Yellow;
-					Console.WriteLine($"Term_{i}: {documentFilesTerms[i].Name}");
-					for (int j = 0; j < documentFilesTerms[i].Documents.Count; j++)
-					{
+					Console.WriteLine($"Term_{i}: {documentFilesTerms[i].Value}");
+					for (int j = 0; j < documentFilesTerms[i].Documents.Count; j++) {
 						Console.WriteLine($"	Name: {documentFilesTerms[i].Documents[j].Name},");
 						Console.WriteLine($"	Occurence: {documentFilesTerms[i].Documents[j].Occurence}");
 						Console.WriteLine();
@@ -58,17 +55,13 @@ namespace SearchEngine.Crawler
 			Console.WriteLine();
 
 			Client client = new Client();
-			while (!client.IsConnected)
-			{
+			while (!client.IsConnected) {
 				Console.WriteLine("Connecting to the database . . .");
-				try
-				{
+				try {
 					client.Connect();
 					Console.ForegroundColor = ConsoleColor.Green;
 					Console.WriteLine("Successfully connected to the database");
-				}
-				catch (Exception)
-				{
+				} catch (Exception) {
 					Console.ForegroundColor = ConsoleColor.Red;
 					Console.WriteLine("Failed to connect to the database");
 				}
